@@ -20,9 +20,9 @@ namespace MSMQExplorer
         private readonly BinaryMessageFormatter _binaryFormatter = new BinaryMessageFormatter();
         private readonly StringMessageFormatter _stringFormatter = new StringMessageFormatter();
         private readonly XmlMessageFormatter _xmlFormatter = new XmlMessageFormatter(new[] {typeof (XmlDocument)});
-        private String _currentRecQueue;
-        public String SendHostName { get; set; }
-        public String RecHostName { get; set; }
+        private string _currentRecQueue;
+        public string SendHostName { get; set; }
+        public string RecHostName { get; set; }
 
         public MessageQueue[] SendPrivateQueueList { get; set; }
         public MessageQueue[] SendPublicQueueList { get; set; }
@@ -85,13 +85,13 @@ namespace MSMQExplorer
         /// <param name="useTracing"></param>
         /// <param name="useJournal"></param>
         /// <param name="priority"></param>
-        public void SendMessage(string queueName, List<byte> messageByteList, string msgLabel, String format,
-            Boolean useTransaction, Boolean isPrivateQueue, int timeToReachQueue,
-            String timeToReachQueuePeriod, int timeToReceive, String timeToRecievePeriod, Boolean useDeadLetterQueue,
-            Boolean useEncryption, Boolean useTracing, Boolean useJournal, String priority)
+        public void SendMessage(string queueName, List<byte> messageByteList, string msgLabel, string format,
+            bool useTransaction, bool isPrivateQueue, int timeToReachQueue,
+            string timeToReachQueuePeriod, int timeToReceive, string timeToRecievePeriod, bool useDeadLetterQueue,
+            bool useEncryption, bool useTracing, bool useJournal, string priority)
         {
             // Set up the queue
-            String queuePath = "FormatName:DIRECT=OS:" + SendHostName + @"\" + queueName;
+            string queuePath = "FormatName:DIRECT=OS:" + SendHostName + @"\" + queueName;
             MessageQueue mq = new MessageQueue(queuePath);
             Message message;
 
@@ -128,7 +128,7 @@ namespace MSMQExplorer
                 message.TimeToReachQueue = GetTimeSpan(timeToReachQueuePeriod, timeToReachQueue);
             }
 
-            Boolean isQTrans = false;
+            bool isQTrans = false;
             try
             {
                 isQTrans = mq.Transactional;
@@ -167,7 +167,7 @@ namespace MSMQExplorer
             }
         }
 
-        private static MessagePriority GetMessagePriority(String priority)
+        private static MessagePriority GetMessagePriority(string priority)
         {
             switch (priority)
             {
@@ -190,7 +190,7 @@ namespace MSMQExplorer
             }
         }
 
-        private static TimeSpan GetTimeSpan(String period, int duration)
+        private static TimeSpan GetTimeSpan(string period, int duration)
         {
             if (period == "Seconds")
             {
@@ -212,16 +212,16 @@ namespace MSMQExplorer
         /// <param name="useTransaction"></param>
         /// <param name="isPrivateQueue"></param>
         /// <returns></returns>
-        public List<byte> ReceiveMessage(string queueName, Boolean isJournal, String format, Boolean useTransaction,
-            Boolean isPrivateQueue)
+        public List<byte> ReceiveMessage(string queueName, bool isJournal, string format, bool useTransaction,
+            bool isPrivateQueue)
         {
-            String queuePath = GetQueuePath(RecHostName, queueName);
+            string queuePath = GetQueuePath(RecHostName, queueName);
 
             // Set up MSMQ queue and message
-            MessageQueue mq = new MessageQueue(queuePath);
+            MessageQueue mq = new MessageQueue(queuePath, QueueAccessMode.ReceiveAndAdmin);
 
-            Boolean isQTrans = false;
-            Boolean isRemoteQueue = false;
+            bool isQTrans = false;
+            bool isRemoteQueue = false;
 
             try
             {
@@ -237,7 +237,7 @@ namespace MSMQExplorer
             bool requireTransaction = (!isJournal && (useTransaction && !isPrivateQueue)) || isQTrans;
 
             // Return message text
-            List<byte> messageByteList = new List<Byte>();
+            List<byte> messageByteList = new List<byte>();
             messageByteList = null;
             Message message;
 
@@ -276,7 +276,7 @@ namespace MSMQExplorer
                     case "Text":
                         // Format as Text
                         message.Formatter = _stringFormatter;
-                        String messageText = message.Body.ToString();
+                        string messageText = message.Body.ToString();
                         messageByteList = StringTools.GetByteListFromString(messageText);
                         break;
                     default:
@@ -290,9 +290,9 @@ namespace MSMQExplorer
             return messageByteList;
         }
 
-        public MessageQueue GetQueueByName(String host, String queueName)
+        public MessageQueue GetQueueByName(string host, string queueName)
         {
-            String queuePath = GetQueuePath(RecHostName, queueName);
+            string queuePath = GetQueuePath(RecHostName, queueName);
 
             // Set up MSMQ queue and message
             MessageQueue mq = new MessageQueue(queuePath);
@@ -352,7 +352,7 @@ namespace MSMQExplorer
                 case "Text":
                     // Receive as text
                     message.Formatter = _stringFormatter;
-                    String msgBody = message.Body.ToString();
+                    string msgBody = message.Body.ToString();
                     messageByteList = StringTools.GetByteListFromString(msgBody);
                     break;
                 default:
@@ -398,16 +398,10 @@ namespace MSMQExplorer
             {
                 ret = q.Peek(new TimeSpan(1), cursor, action);
             }
-            catch (Exception mqe)
+            catch (MessageQueueException mqe)
             {
-                if (mqe is MessageQueueException)
-                {
-                    if (!mqe.Message.ToLower().Contains("timeout"))
-                    {
-                        throw;
-                    }
-                }
-                else
+                if (mqe.MessageQueueErrorCode != MessageQueueErrorCode.IOTimeout 
+                    && mqe.MessageQueueErrorCode != MessageQueueErrorCode.IllegalCursorAction)
                 {
                     throw;
                 }
@@ -426,7 +420,7 @@ namespace MSMQExplorer
             try
             {
                 string queuePath = GetQueuePath(hostname, queueName);
-                MessageQueue queue = new MessageQueue(queuePath);
+                MessageQueue queue = new MessageQueue(queuePath, QueueAccessMode.PeekAndAdmin);
                 if (!queue.CanRead)
                 {
                     return -1;
@@ -530,12 +524,12 @@ namespace MSMQExplorer
             return queueList;
         }
 
-        public void RefreshRecMessageList(String queueName)
+        public void RefreshRecMessageList(string queueName)
         {
-            if (String.IsNullOrEmpty(queueName)) return;
+            if (string.IsNullOrEmpty(queueName)) return;
             string queuePath = GetQueuePath(RecHostName, queueName);
             // Connect to a queue
-            MessageQueue queue = new MessageQueue(queuePath);
+            MessageQueue queue = new MessageQueue(queuePath, QueueAccessMode.SendAndReceive);
             queue.MessageReadPropertyFilter.SetAll();
 
             // Populate an array with copies of all the messages in the queue.
@@ -560,21 +554,21 @@ namespace MSMQExplorer
         /// </summary>
         /// <param name="hostName"></param>
         /// <param name="queueName"></param>
-        public void PurgeQueue(String hostName, String queueName)
+        public void PurgeQueue(string hostName, string queueName)
         {
-            if (String.IsNullOrEmpty(queueName)) return;
+            if (string.IsNullOrEmpty(queueName)) return;
             string queuePath = GetQueuePath(hostName, queueName);
             // Connect to a queue
             MessageQueue queue = new MessageQueue(queuePath);
             queue.Purge();
         }
 
-        public static String GetSimpleQueuePath(String hostName, String queueName)
+        public static string GetSimpleQueuePath(string hostName, string queueName)
         {
             return (hostName + @"\" + queueName);
         }
 
-        public static String GetNiceQueueName(String queueName)
+        public static string GetNiceQueueName(string queueName)
         {
             switch (queueName)
             {
@@ -589,37 +583,37 @@ namespace MSMQExplorer
             }
         }
 
-        public MessageQueue CreateQueue(String hostName, String queueType, String queueName, Boolean isTransactional)
+        public MessageQueue CreateQueue(string hostName, string queueType, string queueName, bool isTransactional)
         {
-            if (String.IsNullOrEmpty(hostName) || String.IsNullOrEmpty(queueName)) return null;
+            if (string.IsNullOrEmpty(hostName) || string.IsNullOrEmpty(queueName)) return null;
             string queuePath = queueType == @"public$\"
                 ? GetSimpleQueuePath(hostName, queueName)
                 : GetSimpleQueuePath(hostName, queueType + queueName);
             return MessageQueue.Create(queuePath, isTransactional);
         }
 
-        public void CreateSendQueue(String queueType, String queueName, Boolean isTransactional)
+        public void CreateSendQueue(string queueType, string queueName, bool isTransactional)
         {
-            if (String.IsNullOrEmpty(queueType) || String.IsNullOrEmpty(queueName)) return;
-            String queuePath = GetSimpleQueuePath(SendHostName, queueType + queueName);
+            if (string.IsNullOrEmpty(queueType) || string.IsNullOrEmpty(queueName)) return;
+            string queuePath = GetSimpleQueuePath(SendHostName, queueType + queueName);
             MessageQueue.Create(queuePath, isTransactional);
         }
 
-        public void CreateRecQueue(String queueType, String queueName, Boolean isTransactional)
+        public void CreateRecQueue(string queueType, string queueName, bool isTransactional)
         {
-            if (String.IsNullOrEmpty(queueType) || String.IsNullOrEmpty(queueName)) return;
-            String queuePath = GetSimpleQueuePath(SendHostName, queueType + queueName);
+            if (string.IsNullOrEmpty(queueType) || string.IsNullOrEmpty(queueName)) return;
+            string queuePath = GetSimpleQueuePath(SendHostName, queueType + queueName);
             MessageQueue.Create(queuePath, isTransactional);
         }
 
-        public void DeleteQueue(String hostName, String queueName)
+        public void DeleteQueue(string hostName, string queueName)
         {
-            if (String.IsNullOrEmpty(hostName) || String.IsNullOrEmpty(queueName)) return;
-            String queuePath = GetSimpleQueuePath(hostName, queueName);
+            if (string.IsNullOrEmpty(hostName) || string.IsNullOrEmpty(queueName)) return;
+            string queuePath = GetSimpleQueuePath(hostName, queueName);
             MessageQueue.Delete(queuePath);
         }
 
-        public static SystemMessageQueue[] GetSystemQueuesByMachine(String hostName)
+        public static SystemMessageQueue[] GetSystemQueuesByMachine(string hostName)
         {
             SystemMessageQueue[] queueList = new SystemMessageQueue[3];
 

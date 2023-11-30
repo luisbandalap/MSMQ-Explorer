@@ -41,7 +41,7 @@ namespace MSMQExplorer
         {
             if (byteList == null) return "";
             byte[] byteArray = byteList.ToArray();
-            String text = Encoding.Unicode.GetString(byteArray);
+            string text = Encoding.Unicode.GetString(byteArray);
             return text;
         }
 

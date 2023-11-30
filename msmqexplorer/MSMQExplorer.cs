@@ -34,53 +34,53 @@ namespace MSMQExplorer
         // Member variables
         private readonly bool _isMsmqInstalled;
         private readonly MsmqMessaging _msmqMessaging;
-        private String _inXsdPath;
-        private Boolean _isRecPrivateQueue;
-        private Boolean _isSendPrivateQueue;
-        private String _messageLabel;
+        private string _inXsdPath;
+        private bool _isRecPrivateQueue;
+        private bool _isSendPrivateQueue;
+        private string _messageLabel;
         private OperatingSystem _operatingSystem;
         private RibbonOrbStyle _orbStyle;
         private int _orbStyleIndex;
-        private String _orbStyleName;
+        private string _orbStyleName;
         private RibbonTheme _orbTheme;
         private int _orbThemeIndex;
-        private String _orbThemeName;
-        private String _outXsdPath;
-        private String _priority;
-        private String _recFormat;
-        private String _recHostName;
+        private string _orbThemeName;
+        private string _outXsdPath;
+        private string _priority;
+        private string _recFormat;
+        private string _recHostName;
         private List<byte> _recMessageByteList;
         private DynamicByteProvider _recMessageByteProvider;
-        private String _selectedMessageId;
-        private String _selectedRecQueueName;
-        private String _selectedSendQueueName;
-        private String _selectedTab;
-        private String _sendFormat;
-        private String _sendHostName;
+        private string _selectedMessageId;
+        private string _selectedRecQueueName;
+        private string _selectedSendQueueName;
+        private string _selectedTab;
+        private string _sendFormat;
+        private string _sendHostName;
         private List<byte> _sendMessageByteList;
         private DynamicByteProvider _sendMessageByteProvider;
         private int _timeToReachQueue;
-        private String _timeToReachQueuePeriod;
+        private string _timeToReachQueuePeriod;
         private int _timeToReceive;
-        private String _timeToRecievePeriod;
-        private Boolean _useDeadLetterQueue;
-        private Boolean _useEncryption;
-        private Boolean _useJournal;
-        private Boolean _useRecTransaction;
-        private Boolean _useSendTransaction;
-        private Boolean _useTracing;
+        private string _timeToRecievePeriod;
+        private bool _useDeadLetterQueue;
+        private bool _useEncryption;
+        private bool _useJournal;
+        private bool _useRecTransaction;
+        private bool _useSendTransaction;
+        private bool _useTracing;
         private FormSettings _formSettings;
-        private Boolean _showUpdatedTimestamp;
+        private bool _showUpdatedTimestamp;
         private List<MSMQLog> _msmqLog;
 
         // Timers - Count Refresh
         private System.Timers.Timer _countTimer;
-        private Boolean _autoUpdateCount;
+        private bool _autoUpdateCount;
         private int _autoUpdateCountInterval;
 
         // Timers - Queue Refresh
         private System.Timers.Timer _queueTimer;
-        private Boolean _autoUpdateQueue;
+        private bool _autoUpdateQueue;
         private int _autoUpdateQueueInterval;
 
         /// <summary>
@@ -105,7 +105,7 @@ namespace MSMQExplorer
                     try
                     {
                         Message model = message as Message;
-                        return model == null ? String.Empty : model.SourceMachine;
+                        return model == null ? string.Empty : model.SourceMachine;
                     }
                     catch (Exception)
                     {
@@ -154,7 +154,7 @@ namespace MSMQExplorer
             AddLogEntry("Info", "Log initialised");
         }
 
-        private void AddLogEntry(String entryType, String logEntry)
+        private void AddLogEntry(string entryType, string logEntry)
         {
             MSMQLog newEntry = new MSMQLog(DateTime.Now, entryType, logEntry);
             _msmqLog.Add(newEntry);
@@ -339,7 +339,7 @@ namespace MSMQExplorer
             const string queuePath = "";
             try
             {
-                if (String.IsNullOrEmpty(_selectedSendQueueName))
+                if (string.IsNullOrEmpty(_selectedSendQueueName))
                 {
                     ShowError("Error", Strings.FormMsmqExplorer_SendMessage_Please_select_a_queue_, "");
                 }
@@ -357,7 +357,7 @@ namespace MSMQExplorer
 
                     // Add status
                     DateTime now = DateTime.Now;
-                    String messageText = Strings.FormMsmqExplorer_SendMessage_Message_sent_on_queue__ + _selectedSendQueueName + Strings.FormMsmqExplorer_SendMessage__to_host__ +
+                    string messageText = Strings.FormMsmqExplorer_SendMessage_Message_sent_on_queue__ + _selectedSendQueueName + Strings.FormMsmqExplorer_SendMessage__to_host__ +
                                          _sendHostName;
                     textBoxStatus.Text = messageText;
                     AddLogEntry("Send", messageText);
@@ -380,7 +380,7 @@ namespace MSMQExplorer
             try
             {
                 // Receive message
-                Boolean isJournal = _selectedRecQueueName.IndexOf("Journal", StringComparison.Ordinal) > 0;
+                bool isJournal = _selectedRecQueueName.IndexOf("Journal", StringComparison.Ordinal) > 0;
                 _recMessageByteList = _msmqMessaging.ReceiveMessage(_selectedRecQueueName, isJournal, _recFormat,
                     _useRecTransaction, _isRecPrivateQueue);
                 UpdateReceiveTextControls();
@@ -391,7 +391,7 @@ namespace MSMQExplorer
 
                 // Add status
                 DateTime now = DateTime.Now;
-                String messageText = Strings.FormMsmqExplorer_ReceiveMessage_Message_received_on_queue__ + _selectedRecQueueName + Strings.FormMsmqExplorer_ReceiveMessage__from_host__ +
+                string messageText = Strings.FormMsmqExplorer_ReceiveMessage_Message_received_on_queue__ + _selectedRecQueueName + Strings.FormMsmqExplorer_ReceiveMessage__from_host__ +
                                      _recHostName;
                 textBoxStatus.Text = messageText;
                 AddLogEntry("Receive", messageText);
@@ -504,7 +504,7 @@ namespace MSMQExplorer
             if (control.GetType() != typeof (ComboBox)) return;
             ComboBox comboBox = (ComboBox) control;
             Clipboard.SetText(comboBox.Text);
-            comboBox.Text = String.Empty;
+            comboBox.Text = string.Empty;
         }
 
         /// <summary>
@@ -660,10 +660,10 @@ namespace MSMQExplorer
         /// </summary>
         /// <param name="xml">Input XML</param>
         /// <param name="xsdFileName">Input XSD</param>
-        private static void HandleValidationButton(String xml, String xsdFileName)
+        private static void HandleValidationButton(string xml, string xsdFileName)
         {
             // Validate the XML against the XSD
-            if (xsdFileName == String.Empty) return;
+            if (xsdFileName == string.Empty) return;
             XmlValidation validator = new XmlValidation();
             bool isValid = ValidateXml(validator, xml, xsdFileName);
             ValidateResults results = new ValidateResults(isValid, validator.Errors, validator.Warnings)
@@ -680,7 +680,7 @@ namespace MSMQExplorer
         /// <param name="xml"></param>
         /// <param name="xsdFileName"></param>
         /// <returns></returns>
-        private static Boolean ValidateXml(XmlValidation validator, String xml, String xsdFileName)
+        private static bool ValidateXml(XmlValidation validator, string xml, string xsdFileName)
         {
             validator.AddSchema(@xsdFileName);
 
@@ -707,7 +707,7 @@ namespace MSMQExplorer
         ///     Handle getting XSD file
         /// </summary>
         /// <returns></returns>
-        private String GetXsdFile()
+        private string GetXsdFile()
         {
             // Get XSD schema
             openFileDialog1.Title = Strings.SelectXsd;
@@ -825,7 +825,7 @@ namespace MSMQExplorer
 
         private void AddQueueNode(BufferedTreeView treeView, TreeNode parentNode, MessageQueue queueItem)
         {
-            String queueName = queueItem.QueueName;
+            string queueName = queueItem.QueueName;
             TreeNode tempNode = parentNode.Nodes.Add(Strings.FormMsmqExplorer_AddQueueNodeWithChildren_Processing___);
             tempNode.Tag = queueName;
             tempNode.Name = queueName;
@@ -837,7 +837,7 @@ namespace MSMQExplorer
 
         private void AddSystemQueueNode(BufferedTreeView treeView, TreeNode parentNode, SystemMessageQueue queueItem)
         {
-            String queueName = queueItem.QueueName;
+            string queueName = queueItem.QueueName;
             TreeNode tempNode = parentNode.Nodes.Add(Strings.FormMsmqExplorer_AddQueueNodeWithChildren_Processing___);
             tempNode.Tag = queueName;
             tempNode.Name = queueName;
@@ -872,7 +872,7 @@ namespace MSMQExplorer
                 TreeNode publicNode = bufferedTreeViewRecQueues.Nodes.Add("Public");
                 publicNode.ImageIndex = 0;
                 // Display the paths of the queues in the list.
-                foreach (MessageQueue queueItem in _msmqMessaging.RecPublicQueueList)
+                foreach (MessageQueue queueItem in _msmqMessaging.RecPublicQueueList ?? new MessageQueue[] { })
                 {
                     AddQueueNodeWithChildren(bufferedTreeViewRecQueues, publicNode, queueItem);
                 }
@@ -928,7 +928,7 @@ namespace MSMQExplorer
                 TreeNode publicNode = bufferedTreeViewSendQueues.Nodes.Add("Public");
                 publicNode.ImageIndex = 0;
                 // Display the paths of the queues in the list.
-                foreach (MessageQueue queueItem in _msmqMessaging.SendPublicQueueList)
+                foreach (MessageQueue queueItem in _msmqMessaging.SendPublicQueueList ?? new MessageQueue[] { })
                 {
                     AddQueueNode(bufferedTreeViewSendQueues, publicNode, queueItem);
                 }
@@ -1245,7 +1245,7 @@ namespace MSMQExplorer
         /// </summary>
         private void RefreshRecControls()
         {
-            String currentHost = _msmqMessaging.RecHostName;
+            string currentHost = _msmqMessaging.RecHostName;
 
             try
             {
@@ -1254,7 +1254,7 @@ namespace MSMQExplorer
                 Application.DoEvents();
 
                 // Get the proposed host name
-                String newHostName = textBoxRecHost.Text;
+                string newHostName = textBoxRecHost.Text;
 
                 _msmqMessaging.RecHostName = newHostName;
                 RefreshRecQueueList();
@@ -1291,7 +1291,7 @@ namespace MSMQExplorer
 
         private void RefreshSendControls()
         {
-            String currentHost = _msmqMessaging.SendHostName;
+            string currentHost = _msmqMessaging.SendHostName;
 
             try
             {
@@ -1300,7 +1300,7 @@ namespace MSMQExplorer
                 Application.DoEvents();
 
                 // Get the proposed host name
-                String newHostName = textBoxSendHost.Text;
+                string newHostName = textBoxSendHost.Text;
 
                 _msmqMessaging.SendHostName = newHostName;
                 RefreshSendQueueList();
@@ -1365,7 +1365,7 @@ namespace MSMQExplorer
             RefreshSendMessageControls(false);
         }
 
-        private void RefreshSendMessageControls(Boolean isBinary)
+        private void RefreshSendMessageControls(bool isBinary)
         {
             _sendMessageByteProvider = new DynamicByteProvider(_sendMessageByteList);
             hexBoxSendHex.ByteProvider = _sendMessageByteProvider;
@@ -1419,7 +1419,7 @@ namespace MSMQExplorer
         /// </summary>
         /// <param name="queueName"></param>
         /// <param name="treeView"></param>
-        private void UpdateMessageCountControl(string queueName, BufferedTreeView treeView, String hostName)
+        private void UpdateMessageCountControl(string queueName, BufferedTreeView treeView, string hostName)
         {
             // Update the tree view
             TreeNode[] nodes = treeView.Nodes.Find(queueName, true);
@@ -1436,7 +1436,7 @@ namespace MSMQExplorer
 
         private void UpdateTreeNodeCount(TreeNode node, int count)
         {
-            String queueName = node.Tag.ToString();
+            string queueName = node.Tag.ToString();
             UpdateNodeText(node, MsmqMessaging.GetNiceQueueName(queueName) + " (" + count + ")");
             // Highlight inaccessible queues
             if (count == -1)
@@ -1454,9 +1454,9 @@ namespace MSMQExplorer
             UpdateAllMessagesInTreeViewNodes(bufferedTreeViewSendQueues.Nodes, _sendHostName);
         }
 
-        delegate void UpdateNodeTextCallback(TreeNode node, String text);
+        delegate void UpdateNodeTextCallback(TreeNode node, string text);
 
-        private void UpdateNodeText(TreeNode node, String text)
+        private void UpdateNodeText(TreeNode node, string text)
         {
             if (_showUpdatedTimestamp)
                 node.Text = text + " (updated: " + DateTime.Now.ToString() + ")";
@@ -1470,15 +1470,15 @@ namespace MSMQExplorer
         ///     Recursive function to update queue counts in all nodes and child node in the given TreeNodeCollection
         /// </summary>
         /// <param name="nodes"></param>
-        private void UpdateAllMessagesInTreeViewNodes(IEnumerable nodes, String hostName)
+        private void UpdateAllMessagesInTreeViewNodes(IEnumerable nodes, string hostName)
         {
             foreach (TreeNode node in nodes)
             {
                 if (node.Tag != null)
                 {
-                    String queueName = node.Tag.ToString();
+                    string queueName = node.Tag.ToString();
                     int messageCount = _msmqMessaging.GetMessageCount(queueName, hostName);
-                    String newText = MsmqMessaging.GetNiceQueueName(queueName) + " (" + messageCount + ")";
+                    string newText = MsmqMessaging.GetNiceQueueName(queueName) + " (" + messageCount + ")";
                     if (this.InvokeRequired)
                     {
                         UpdateNodeTextCallback setNodeCallBack = new UpdateNodeTextCallback(UpdateNodeText);
@@ -1551,7 +1551,7 @@ namespace MSMQExplorer
         /// </summary>
         /// <param name="hostName"></param>
         /// <param name="queueName"></param>
-        private void PurgeQueue(String hostName, String queueName)
+        private void PurgeQueue(string hostName, string queueName)
         {
             // Confirm with user before progressing
             DialogResult confirmResult =
@@ -1619,7 +1619,7 @@ namespace MSMQExplorer
         /// </summary>
         /// <param name="hostName"></param>
         /// <returns></returns>
-        private MessageQueue CreateQueue(String hostName)
+        private MessageQueue CreateQueue(string hostName)
         {
             NewQueueForm newQueueForm = new NewQueueForm(hostName) {StartPosition = FormStartPosition.CenterParent};
             DialogResult result = newQueueForm.ShowDialog();
@@ -1660,9 +1660,9 @@ namespace MSMQExplorer
         /// <param name="hostName"></param>
         /// <param name="queueName"></param>
         /// <returns></returns>
-        private Boolean DeleteQueue(String hostName, String queueName)
+        private bool DeleteQueue(string hostName, string queueName)
         {
-            if (String.IsNullOrEmpty(queueName) || String.IsNullOrEmpty(hostName))
+            if (string.IsNullOrEmpty(queueName) || string.IsNullOrEmpty(hostName))
             {
                 return false;
             }
@@ -1726,7 +1726,7 @@ namespace MSMQExplorer
         /// </summary>
         /// <param name="queueName"></param>
         /// <param name="treeView"></param>
-        private void DeleteTreeNode(String queueName, BufferedTreeView treeView)
+        private void DeleteTreeNode(string queueName, BufferedTreeView treeView)
         {
             // Look in Private
             TreeNode privateNode = treeView.Nodes[0];
@@ -1810,7 +1810,7 @@ namespace MSMQExplorer
         /// <summary>
         /// </summary>
         /// <param name="xml"></param>
-        private void SaveXmlToFile(String xml)
+        private void SaveXmlToFile(string xml)
         {
             saveFileDialog.Filter = Strings.XmlFilter;
             saveFileDialog.Title = Strings.SaveAsXml;
@@ -1818,7 +1818,7 @@ namespace MSMQExplorer
             saveFileDialog.ShowDialog();
             string fileName = saveFileDialog.FileName;
 
-            if (!String.IsNullOrEmpty(fileName))
+            if (!string.IsNullOrEmpty(fileName))
             {
                 File.WriteAllText(fileName, xml);
             }
@@ -1990,13 +1990,13 @@ namespace MSMQExplorer
             saveFileDialog.FileName = "";
             saveFileDialog.ShowDialog();
             string fileName = saveFileDialog.FileName;
-            if (String.IsNullOrEmpty(fileName))
+            if (string.IsNullOrEmpty(fileName))
             {
                 return;
             }
             BinaryWriter writer = new BinaryWriter(File.Open(fileName, FileMode.Create));
 
-            if (String.IsNullOrEmpty(fileName)) return;
+            if (string.IsNullOrEmpty(fileName)) return;
             writer.Write(messageByteList.ToArray());
             writer.Flush();
             writer.Close();
@@ -2019,7 +2019,7 @@ namespace MSMQExplorer
             MessageQueue queue;
             if (_selectedTab == "Send")
             {
-                if (String.IsNullOrEmpty(_selectedSendQueueName) || _selectedSendQueueName.Contains(";"))
+                if (string.IsNullOrEmpty(_selectedSendQueueName) || _selectedSendQueueName.Contains(";"))
                 {
                     return;
                 }
@@ -2027,7 +2027,7 @@ namespace MSMQExplorer
             }
             else
             {
-                if (String.IsNullOrEmpty(_selectedRecQueueName) || _selectedRecQueueName.Contains(";"))
+                if (string.IsNullOrEmpty(_selectedRecQueueName) || _selectedRecQueueName.Contains(";"))
                 {
                     return;
                 }
@@ -2424,7 +2424,7 @@ namespace MSMQExplorer
         /// </summary>
         private void ShowMessageProperties()
         {
-            if (String.IsNullOrEmpty(_selectedMessageId))
+            if (string.IsNullOrEmpty(_selectedMessageId))
             {
                 return;
             }

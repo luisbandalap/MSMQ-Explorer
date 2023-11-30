@@ -19,8 +19,8 @@ namespace MSMQExplorer
         }
 
         public List<XmlSchema> Schemas { get; set; }
-        public List<String> Errors { get; set; }
-        public List<String> Warnings { get; set; }
+        public List<string> Errors { get; set; }
+        public List<string> Warnings { get; set; }
 
         /// <summary>
         ///     Add a schema to be used during the validation of the XML document
@@ -29,7 +29,7 @@ namespace MSMQExplorer
         /// <returns>True if the schema file was successfully loaded, else false (if false, view Errors/Warnings for reason why)</returns>
         public bool AddSchema(string schemaFileLocation)
         {
-            if (String.IsNullOrEmpty(schemaFileLocation)) return false;
+            if (string.IsNullOrEmpty(schemaFileLocation)) return false;
             if (!File.Exists(schemaFileLocation)) return false;
 
             // Reset the Error/Warning collections
@@ -45,7 +45,7 @@ namespace MSMQExplorer
                 schema = XmlSchema.Read(fs, ValidationEventHandler);
             }
 
-            Boolean isValid = !Errors.Any() && !Warnings.Any();
+            bool isValid = !Errors.Any() && !Warnings.Any();
 
             if (isValid)
             {

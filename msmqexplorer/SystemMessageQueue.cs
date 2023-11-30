@@ -8,16 +8,16 @@ namespace MSMQExplorer
 {
     internal class SystemMessageQueue
     {
-        public SystemMessageQueue(String hostName, String queueName, String displayName)
+        public SystemMessageQueue(string hostName, string queueName, string displayName)
         {
             QueueName = queueName;
             QueuePath = MsmqMessaging.GetQueuePath(hostName, queueName);
             DisplayName = displayName;
         }
 
-        public String QueueName { get; set; }
-        public String QueuePath { get; set; }
+        public string QueueName { get; set; }
+        public string QueuePath { get; set; }
 
-        public String DisplayName { get; set; }
+        public string DisplayName { get; set; }
     }
 }

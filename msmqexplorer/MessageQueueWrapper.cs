@@ -16,7 +16,7 @@ namespace MSMQExplorer
             MessageQueue = new MessageQueue();
         }
 
-        public MessageQueueWrapper(String path)
+        public MessageQueueWrapper(string path)
         {
             MessageQueue = new MessageQueue();
         }

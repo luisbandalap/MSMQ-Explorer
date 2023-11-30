@@ -1,18 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MSMQExplorer
 {
     class MSMQLog
     {
         public DateTime TimeStamp;
-        public String LogType;
-        public String LogEntry;
+        public string LogType;
+        public string LogEntry;
 
-        public MSMQLog(DateTime timeStamp, String logType, String logEntry)
+        public MSMQLog(DateTime timeStamp, string logType, string logEntry)
         {
             TimeStamp = timeStamp;
             LogType = logType;
